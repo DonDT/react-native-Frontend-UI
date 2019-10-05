@@ -13,6 +13,7 @@ import {
 import { SafeAreaView } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Category from "./components/Explore/Category";
+import Home from "./components/Explore/Home";
 
 const { height, width } = Dimensions.get("window");
 
@@ -117,6 +118,20 @@ class Explore extends Component {
                     }}
                   />
                 </View>
+              </View>
+            </View>
+            <View style={{ marginTop: 30 }}>
+              <Text
+                style={{
+                  fontSize: 24,
+                  fontWeight: "700",
+                  paddingHorizontal: 20
+                }}
+              >
+                Homes around the world
+              </Text>
+              <View style={{ paddingHorizontal: 20, marginTop: 20 }}>
+                <Home width={width} />
               </View>
             </View>
           </ScrollView>
