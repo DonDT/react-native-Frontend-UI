@@ -8,23 +8,42 @@ import {
   StatusBar,
   ScrollView,
   Image,
-  Dimensions
+  Dimensions,
+  Animated
 } from "react-native";
 import { SafeAreaView } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Category from "./components/Explore/Category";
 import Home from "./components/Explore/Home";
+import Tag from "./components/Explore/Tag";
 
 const { height, width } = Dimensions.get("window");
 
 class Explore extends Component {
   componentDidMount() {
+    this.scrollY = new Animated.Value(0);
+
     this.startHeaderHeight = 80;
+    this.endHeaderHeight = 50;
     if (Platform.OS == "android") {
-      return (this.startHeaderHeight = 100 + StatusBar.currentHeight);
-    } else {
-      return (this.startHeaderHeight = 80);
+      this.startHeaderHeight = 100 + StatusBar.currentHeight;
+      this.endHeaderHeight = 70 + StatusBar.currentHeight;
     }
+    this.animatedheaderHeight = this.scrollY.interpolate({
+      inputRange: [0, 50],
+      outputRange: [this.startHeaderHeight, this.endHeaderHeight],
+      extrapolate: "clamp"
+    });
+    this.animatedOpacity = this.animatedheaderHeight.interpolate({
+      inputRange: [this.endHeaderHeight, this.startHeaderHeight],
+      outputRange: [0, 1],
+      extrapolate: "clamp"
+    });
+    this.animatedTagTop = this.animatedheaderHeight.interpolate({
+      inputRange: [this.endHeaderHeight, this.startHeaderHeight],
+      outputRange: [-30, 10],
+      extrapolate: "clamp"
+    });
   }
 
   render() {
@@ -32,9 +51,9 @@ class Explore extends Component {
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <View style={{ flex: 1 }}>
-          <View
+          <Animated.View
             style={{
-              height: 80,
+              height: this.animatedheaderHeight,
               //height: this.startHeaderHeight,
               backgroundColor: "white",
               borderBottomWidth: 1,
@@ -67,8 +86,25 @@ class Explore extends Component {
                 style={{ flex: 1, fontWeight: "700", backgroundColor: "white" }}
               />
             </View>
-          </View>
-          <ScrollView scrollEventThrottle={16}>
+            <Animated.View
+              style={{
+                flexDirection: "row",
+                marginHorizontal: 20,
+                position: "relative",
+                top: this.animatedTagTop,
+                opacity: this.animatedOpacity
+              }}
+            >
+              <Tag name="Guests" />
+              <Tag name="Dates" />
+            </Animated.View>
+          </Animated.View>
+          <ScrollView
+            scrollEventThrottle={16}
+            onScroll={Animated.event([
+              { nativeEvent: { contentOffset: { y: this.scrollY } } }
+            ])}
+          >
             <View style={styles.mainHeader}>
               <Text style={styles.headerText}>
                 What can we help you find, dear?
